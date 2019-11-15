@@ -3,7 +3,6 @@ package io.github.jhipster.producer;
 import io.github.jhipster.producer.config.ApplicationProperties;
 import io.github.jhipster.producer.config.DefaultProfileUtil;
 
-import io.github.jhipster.producer.service.ProducerKafkaConsumer;
 import io.github.jhipster.producer.service.ProducerKafkaProducer;
 import org.springframework.context.ConfigurableApplicationContext;
 import io.github.jhipster.config.JHipsterConstants;
@@ -65,7 +64,6 @@ public class ProducerApp implements InitializingBean {
         DefaultProfileUtil.addDefaultProfile(app);
         ConfigurableApplicationContext applicationContext = app.run(args);
         applicationContext.getBean(ProducerKafkaProducer.class).init();
-        applicationContext.getBean(ProducerKafkaConsumer.class).start();
         Environment env = applicationContext.getEnvironment();
         logApplicationStartup(env);
     }
