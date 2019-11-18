@@ -21,7 +21,7 @@ public class JsonKafkaProducer {
 
     private KafkaProducer<String, JsonNode> kafkaProducer;
 
-    String BOOTSTRAP_SERVERS = "localhost:9092";
+    private String BOOTSTRAP_SERVERS = "localhost:9092";
 
     public JsonKafkaProducer() {
 
