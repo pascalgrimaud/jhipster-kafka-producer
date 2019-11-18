@@ -12,7 +12,7 @@ public class ProducerKafkaProducer {
 
     private final Logger log = LoggerFactory.getLogger(ProducerKafkaProducer.class);
 
-    private static final String TOPIC = "shared_topic";
+    private static final String TOPIC = "string_message_topic";
 
     private KafkaProperties kafkaProperties;
 
