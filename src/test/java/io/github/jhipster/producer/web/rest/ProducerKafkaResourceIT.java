@@ -2,6 +2,7 @@ package io.github.jhipster.producer.web.rest;
 
 import io.github.jhipster.producer.ProducerApp;
 import io.github.jhipster.producer.service.ProducerKafkaProducer;
+import io.github.jhipster.producer.service.JsonKafkaProducer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class ProducerKafkaResourceIT {
     @Autowired
     private ProducerKafkaProducer producer;
 
+    @Autowired
+    private JsonKafkaProducer jsonProducer;
 
     private static final int MAX_ATTEMPT = 5;
 
@@ -45,7 +48,7 @@ public class ProducerKafkaResourceIT {
 
     @BeforeEach
     public void setup() {
-        ProducerKafkaResource kafkaResource = new ProducerKafkaResource(producer);
+        ProducerKafkaResource kafkaResource = new ProducerKafkaResource(producer, jsonProducer);
 
         this.restMockMvc = MockMvcBuilders.standaloneSetup(kafkaResource)
             .build();
