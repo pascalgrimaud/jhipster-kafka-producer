@@ -34,10 +34,10 @@ public class FooVM {
 
     @Override
     public String toString() {
-        return "FooVM[" +
+        return "{" +
             "field1='" + field1 + '\'' +
             ", field2='" + field2 + '\'' +
             ", number=" + number +
-            ']';
+            '}';
     }
 }

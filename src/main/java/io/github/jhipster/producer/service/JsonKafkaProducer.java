@@ -19,9 +19,9 @@ public class JsonKafkaProducer {
 
     private static final String TOPIC = "json_message_topic";
 
-    private KafkaProducer<String, JsonNode> kafkaProducer;
-
     private String BOOTSTRAP_SERVERS = "localhost:9092";
+
+    private KafkaProducer<String, JsonNode> kafkaProducer;
 
     public JsonKafkaProducer() {
 
@@ -29,7 +29,7 @@ public class JsonKafkaProducer {
 
     public void init() {
 
-        log.info("Kafka producer initializing...");
+        log.info("Kafka json producer initializing...");
 
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
@@ -38,7 +38,7 @@ public class JsonKafkaProducer {
 
         kafkaProducer = new KafkaProducer<>(props);
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
-        log.info("Kafka producer initialized");
+        log.info("Kafka json producer initialized");
     }
 
     public void send(JsonNode message) {
@@ -51,7 +51,11 @@ public class JsonKafkaProducer {
     }
 
     public void shutdown() {
-        log.info("Shutdown Kafka producer");
+        log.info("Shutdown Kafka json producer");
         kafkaProducer.close();
+    }
+
+    public void setBootstrapServers(String bootstrapServers) {
+        BOOTSTRAP_SERVERS = bootstrapServers;
     }
 }
