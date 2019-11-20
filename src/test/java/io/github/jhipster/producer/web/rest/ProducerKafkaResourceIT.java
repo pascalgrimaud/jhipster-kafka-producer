@@ -1,7 +1,6 @@
 package io.github.jhipster.producer.web.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jhipster.producer.ProducerApp;
 import io.github.jhipster.producer.service.ProducerKafkaProducer;
 import io.github.jhipster.producer.service.JsonKafkaProducer;
@@ -14,6 +13,7 @@ import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.connect.json.JsonDeserializer;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,41 +80,17 @@ public class ProducerKafkaResourceIT {
             .build();
 
         stringProducer.init();
-
-        stringConsumer = new KafkaConsumer<>(
-            ImmutableMap.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers(),
-                ConsumerConfig.GROUP_ID_CONFIG, "group_id",
-                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
-            ),
-            new StringDeserializer(),
-            new StringDeserializer()
-        );
-        stringConsumer.subscribe(Collections.singletonList(STRING_MESSAGE_TOPIC));
-        stringConsumer.poll(Duration.ofSeconds(0));
-
-
         jsonProducer.setBootstrapServers(kafkaContainer.getBootstrapServers());
         jsonProducer.init();
 
-       jsonConsumer = new KafkaConsumer<>(
-            ImmutableMap.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers(),
-                ConsumerConfig.GROUP_ID_CONFIG, "group_id",
-                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
-            ),
-            new StringDeserializer(),
-            new JsonDeserializer()
-        );
-
-       jsonConsumer.subscribe(Collections.singletonList(JSON_MESSAGE_TOPIC));
-       jsonConsumer.poll(Duration.ofSeconds(0));
+        stringConsumer = createAndInitializeStringKafkaConsumer();
+        jsonConsumer = createAndInitializeJsonKafkaConsumer();
 
     }
 
-
     @AfterEach
     public void teardown() {
+
         stringConsumer.close();
         jsonConsumer.close();
 
@@ -127,7 +103,6 @@ public class ProducerKafkaResourceIT {
             .andExpect(status().isOk());
 
         ConsumerRecords<String, String> records = stringConsumer.poll(Duration.ofSeconds(3));
-
 
         Map<MetricName, ? extends Metric> metrics = stringConsumer.metrics();
 
@@ -184,9 +159,43 @@ public class ProducerKafkaResourceIT {
         Assertions.assertThat(totalConsumedMessage).isEqualTo(expectedTotalConsumedMessage);
     }
 
+    @NotNull
+    private KafkaConsumer<String, String> createAndInitializeStringKafkaConsumer() {
 
+        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(
+            ImmutableMap.of(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers(),
+                ConsumerConfig.GROUP_ID_CONFIG, "group_id",
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
+            ),
+            new StringDeserializer(),
+            new StringDeserializer()
+        );
 
+        kafkaConsumer.subscribe(Collections.singletonList(STRING_MESSAGE_TOPIC));
+        kafkaConsumer.poll(Duration.ofSeconds(0));
 
+        return kafkaConsumer;
+    }
+
+    @NotNull
+    private KafkaConsumer<String, JsonNode> createAndInitializeJsonKafkaConsumer() {
+
+        KafkaConsumer<String, JsonNode> kafkaConsumer = new KafkaConsumer<>(
+            ImmutableMap.of(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers(),
+                ConsumerConfig.GROUP_ID_CONFIG, "group_id",
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
+            ),
+            new StringDeserializer(),
+            new JsonDeserializer()
+        );
+
+        kafkaConsumer.subscribe(Collections.singletonList(JSON_MESSAGE_TOPIC));
+        kafkaConsumer.poll(Duration.ofSeconds(0));
+
+        return kafkaConsumer;
+    }
 
 }
 
